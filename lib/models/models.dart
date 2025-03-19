@@ -2,21 +2,37 @@ import 'package:flutter/material.dart';
 
 enum GateType { and, or, not }
 
+
+
 class Gate {
   final GateType type;
+
   Offset position;
   List<Offset> inputPositions = [];
+
   Offset outputPosition = Offset.zero;
   List<int> inputValues;
   int outputValue = 0;
 
-  Gate({required this.type, required this.position, List<int>? inputs})
+  Gate({
+    required this.type,
+    required this.position,
+    List<int>? inputs
+  })
       : inputValues = inputs ?? (type == GateType.not ? [0] : [0, 0]) {
     updatePositions();
   }
 
+
   void updatePositions() {
-    outputPosition = Offset(position.dx + 50, position.dy + 20);
+    var kadod=type == GateType.and?35:
+    type == GateType.not?45:
+    50;
+
+    outputPosition = Offset(
+        position.dx + kadod,
+        position.dy + 20
+    );
 
     if (type == GateType.and || type == GateType.or) {
       inputPositions = [
@@ -38,6 +54,7 @@ class Gate {
     }
   }
 }
+
 
 class Connection {
   Offset start;

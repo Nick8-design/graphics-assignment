@@ -15,7 +15,7 @@ class CircuitCanvas extends StatefulWidget {
   });
 
   @override
-  _CircuitCanvasState createState() => _CircuitCanvasState();
+  State<CircuitCanvas> createState() => _CircuitCanvasState();
 }
 
 class _CircuitCanvasState extends State<CircuitCanvas> {
@@ -38,8 +38,14 @@ class _CircuitCanvasState extends State<CircuitCanvas> {
       // Select input and create a connection
       for (Offset inputPos in gate.inputPositions) {
         if ((tapPosition - inputPos).distance < 15 && selectedOutput != null) {
+
+
           widget.onConnectionAdded(selectedOutput!, inputPos);
+
+
           labels[selectedOutput!] = getNextLabel();
+
+
           labels[inputPos] = labels[selectedOutput!]!;
           setState(() {
             selectedOutput = null;
@@ -52,7 +58,13 @@ class _CircuitCanvasState extends State<CircuitCanvas> {
     // Check if a connection is clicked for deletion
     for (Connection connection in widget.connections) {
       if (isNearLine(connection.start, connection.end, tapPosition)) {
+
+
+
         widget.onConnectionRemoved(connection);
+
+
+
         setState(() {});
         return;
       }
@@ -100,12 +112,17 @@ class _CircuitCanvasState extends State<CircuitCanvas> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapUp: (details) => handleTap(details.localPosition),
-      onPanStart: (details) => startDragging(details.localPosition),
-      onPanUpdate: (details) => updateDragging(details.localPosition),
+      onTapUp: (pos) => handleTap(pos.localPosition),
+      onPanStart: (pos) => startDragging(pos.localPosition),
+      onPanUpdate: (pos) => updateDragging(pos.localPosition),
       onPanEnd: (_) => stopDragging(),
       child: CustomPaint(
-        painter: CircuitPainter(widget.gates, widget.connections, selectedOutput, labels),
+        painter: CircuitPainter(
+            widget.gates,
+            widget.connections,
+            selectedOutput,
+            labels
+        ),
         child: Container(),
       ),
     );
@@ -122,9 +139,20 @@ class CircuitPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paintGate = Paint()..color = Colors.black..style = PaintingStyle.stroke..strokeWidth = 2;
-    final paintConnection = Paint()..color = Colors.blue..strokeWidth = 3;
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+    final paintGate = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+
+    final paintConnection = Paint()
+      ..color = Colors.black54
+      ..strokeWidth = 3;
+
+
+    final textPainter = TextPainter(
+        textDirection: TextDirection.ltr
+    );
 
     // Draw gates
     for (Gate gate in gates) {
@@ -132,12 +160,12 @@ class CircuitPainter extends CustomPainter {
 
       // Draw input circles and labels
       for (Offset input in gate.inputPositions) {
-        canvas.drawCircle(input, 5, paintGate);
+        canvas.drawCircle(input, 3, paintGate);
         _drawLabel(canvas, textPainter, input, labels[input] ?? '');
       }
 
       // Draw output circle and label
-      canvas.drawCircle(gate.outputPosition, 5, paintGate);
+      canvas.drawCircle(gate.outputPosition, 3, paintGate);
       _drawLabel(canvas, textPainter, gate.outputPosition, labels[gate.outputPosition] ?? '');
     }
 
@@ -148,7 +176,10 @@ class CircuitPainter extends CustomPainter {
 
     // Highlight selected output
     if (selectedOutput != null) {
-      canvas.drawCircle(selectedOutput!, 7, Paint()..color = Colors.red);
+      canvas.drawCircle(
+          selectedOutput!,
+          3, Paint()..color = Colors.green
+      );
     }
   }
 

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'models.dart';
 
@@ -10,7 +9,7 @@ class GatePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.black
+      ..color = Colors.white70
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 

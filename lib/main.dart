@@ -8,6 +8,8 @@ void main() {
   runApp(MyApp());
 }
 
+
+///entry class
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -18,6 +20,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+///mainscreen
 class CircuitDesignerScreen extends StatefulWidget {
   const CircuitDesignerScreen({super.key});
 
@@ -26,8 +29,15 @@ class CircuitDesignerScreen extends StatefulWidget {
 }
 
 class _CircuitDesignerScreenState extends State<CircuitDesignerScreen> {
+
+//store list of gates models each having (type,position,inputv,outv)
   List<Gate> gates = [];
+
+
+//store lines having start and end position
   List<Connection> connections = [];
+
+
   int labelCounter = 0;
 
   void addGate(GateType type, Offset position) {
@@ -85,7 +95,7 @@ class _CircuitDesignerScreenState extends State<CircuitDesignerScreen> {
                 );
 
               },
-              icon: Icon(Icons.connect_without_contact_outlined)
+              icon: Icon(Icons.cloud_upload)
           ),
         ],
 
@@ -112,11 +122,14 @@ class _CircuitDesignerScreenState extends State<CircuitDesignerScreen> {
                       ),
 Divider(),
                       SizedBox(height: 8,),
+
                       Draggable<GateType>(
                         data: GateType.and,
                         feedback: GateWidget(GateType.and),
                         child: GateWidget(GateType.and),
                       ),
+
+
                       SizedBox(height: 8,),
                       Divider(),
                       SizedBox(height: 8,),
@@ -138,73 +151,116 @@ Divider(),
                       SizedBox(height: 8,),
                       Divider(),
                       SizedBox(height: 8,),
+                      Text(
+                          "For XOR and NAND ,update to premium",
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                            color: CupertinoColors.white,
+                          )
+                      ),
+
                     ],
                   ),
                 ),
                 Expanded(
-                  child: DragTarget<GateType>(
-                    onAcceptWithDetails: (details) {
-                      addGate(details.data, details.offset);
-                    },
-                    builder: (context, candidateData, rejectedData) {
-                      return Stack(
-                        children: [
-                          CircuitCanvas(
-                            gates: gates,
-                            connections: connections,
-                            onConnectionAdded: (start, end) {
-                              setState(() {
-                                connections.add(Connection(start: start, end: end));
-                                propagateSignal();
-                              });
-                            },
-                            onConnectionRemoved: (connection) {
-                              setState(() {
-                                connections.remove(connection);
-                              });
-                            },
-                          ),
-                          Positioned(
-                            left: 10,
-                            top: 10,
-                            child: Column(
-                              children: gates.map((gate) {
-                                return Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("${gate.type}"),
-                                    for (int i = 0; i < gate.inputValues.length; i++)
-                                      DropdownButton<int>(
-                                        value: gate.inputValues[i],
-                                        items: [
-                                          DropdownMenuItem(value: 0, child: Text("0")),
-                                          DropdownMenuItem(value: 1, child: Text("1")),
-                                        ],
-                                        onChanged: (value) {
-                                          if (value != null) updateGateInput(gate, i, value);
+                  child:
+
+                        //ListView(
+                         // scrollDirection: Axis.horizontal,
+                        //  children: [
+                            Container(
+                              color: Colors.blueGrey[900],
+                              child:  DragTarget<GateType>(
+                                onAcceptWithDetails: (details) {
+                                  addGate(details.data, details.offset);
+                                },
+                                builder: (context, candidateData, rejectedData) {
+                                  return Stack(
+                                    children: [
+
+                                      CircuitCanvas(
+                                        gates: gates,
+                                        connections: connections,
+
+
+
+                                        onConnectionAdded: (start, end) {
+                                          setState(() {
+                                            connections.add(Connection(start: start, end: end));
+                                            propagateSignal();
+                                          });
+                                        },
+
+
+                                        onConnectionRemoved: (connection) {
+                                          setState(() {
+                                            connections.remove(connection);
+                                          });
+
+
                                         },
                                       ),
-                                  ],
-                                );
-                              }).toList(),
+                                      Positioned(
+                                        left: 10,
+                                        top: 10,
+                                        child: Column(
+                                          children: gates.map((gate) {
+                                            return Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  "${gate.type}  ",
+                                                  style: TextStyle(
+                                                    color: Colors.white
+                                                  ),
+                                                ),
+                                                for (int i = 0; i < gate.inputValues.length; i++)
+                                                  DropdownButton<int>(
+                                                    value: gate.inputValues[i],
+                                                    items: [
+                                                      DropdownMenuItem(value: 0, child: Text("0" ,style: TextStyle(
+                                            color: Colors.white60
+                                            ),)),
+                                                      DropdownMenuItem(value: 1, child: Text("1", style: TextStyle(
+                                                          color: Colors.white60
+                                                      ),)),
+                                                    ],
+                                                    onChanged: (value) {
+                                                      if (value != null) updateGateInput(gate, i, value);
+                                                    },
+                                                  ),
+                                              ],
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+
+                     //     ],
+                    //    )
+
+
+
+
+
+
                 ),
               ],
             ),
           ),
           Container(
             padding: EdgeInsets.all(8),
-            color: Colors.grey[300],
+            color: Colors.lightBlue,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Circuit Output: ${gates.isNotEmpty ? gates.last.outputValue : "N/A"}",
+                  "Circuit Output: ${gates.isNotEmpty ? gates.last.outputValue : ""}",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -224,7 +280,10 @@ class GateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: GatePainter(type),
-      child: Container(width: 50, height: 40),
+      child: Container(
+          width: 50,
+          height: 40,
+      ),
     );
   }
 }
